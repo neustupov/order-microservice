@@ -17,7 +17,9 @@ public class CreateOrderSaga implements SimpleSaga<CreateOrderSagaState> {
       AccountingServiceProxy accountingService){
     this.sagaDefinition =
         step()
-        .withCompensation(orderService.reject(), CreateOrderSagaState::makeRejectOrderCommand)
+        .withCompensation(orderService.reject, CreateOrderSagaState::makeRejectOrderCommand)
+        .step()
+        .invokeParticipant()
   }
 
   @Override

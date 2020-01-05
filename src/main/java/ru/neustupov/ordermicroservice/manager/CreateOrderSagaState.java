@@ -4,16 +4,22 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import ru.neustupov.ordermicroservice.command.order.RejectOrder;
+import ru.neustupov.ordermicroservice.command.ticket.CancelCreateTicket;
+import ru.neustupov.ordermicroservice.command.ticket.CreateTicket;
+import ru.neustupov.ordermicroservice.command.ticket.CreateTicketReply;
 import ru.neustupov.ordermicroservice.model.OrderDetails;
+import ru.neustupov.ordermicroservice.model.TicketDetails;
 
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Slf4j
 public class CreateOrderSagaState {
 
-  @Getter
-  @Setter
   private Long orderId;
-
   private OrderDetails orderDetails;
   private Long ticketId;
 
@@ -23,5 +29,24 @@ public class CreateOrderSagaState {
     this.orderDetails = orderDetails;
   }
 
-  public void makeRejectOrderCommand(){}
+  CreateTicket makeCreateTicketCommand(){
+    return new CreateTicket(orderDetails.getRestaurantId(), getOrderId(), makeTicketDetails(orderDetails));
+  }
+
+  void handleCreateTicketReply(CreateTicketReply reply){
+    log.debug("getTicketId {}", reply.getTicketId());
+    setTicketId(reply.getTicketId());
+  }
+
+  CancelCreateTicket makeCancelCreateTicketCommand(){
+    return new CancelCreateTicket(getTicketId());
+  }
+
+  RejectOrder makeRejectOrderCommand(){
+    return new RejectOrder(getOrderId());
+  }
+
+  private TicketDetails makeTicketDetails(OrderDetails orderDetails){
+    return new TicketDetails();
+  }
 }
