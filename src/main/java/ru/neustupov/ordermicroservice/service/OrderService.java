@@ -22,6 +22,14 @@ public class OrderService {
   private DomainEventPublisher eventPublisher;
 
   public Order createOrder(OrderDetails orderDetails){
+    ResultWithEvents<Order> orderAndEvents = Order.createOrder(orderDetails);
+    Order order = orderAndEvents.result;
+    orderRepository.save(order);
 
+    eventPublisher.publish(Order.class, Long.toString(order.getId()), orderAndEvents.events);
+    CreateOrderSagaState data = new CreateOrderSagaState(order.getId(), orderDetails);
+    createOrderSagaManager.create(data, Order.class, order.getId());
+
+    return order;
   }
 }
