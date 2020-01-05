@@ -5,8 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import ru.neustupov.ordermicroservice.command.card.Authorize;
+import ru.neustupov.ordermicroservice.command.order.ApproveOrder;
 import ru.neustupov.ordermicroservice.command.order.RejectOrder;
+import ru.neustupov.ordermicroservice.command.order.ValidateOrder;
 import ru.neustupov.ordermicroservice.command.ticket.CancelCreateTicket;
+import ru.neustupov.ordermicroservice.command.ticket.ConfirmCreateTicket;
 import ru.neustupov.ordermicroservice.command.ticket.CreateTicket;
 import ru.neustupov.ordermicroservice.command.ticket.CreateTicketReply;
 import ru.neustupov.ordermicroservice.model.OrderDetails;
@@ -44,6 +48,22 @@ public class CreateOrderSagaState {
 
   RejectOrder makeRejectOrderCommand(){
     return new RejectOrder(getOrderId());
+  }
+
+  ValidateOrder makeValidateOrderByConsumerCommand(){
+    return new ValidateOrder(getOrderId());
+  }
+
+  Authorize makeAuthorizeCommand(){
+    return new Authorize();
+  }
+
+  ConfirmCreateTicket makeConfirmCreateTicketCommand(){
+    return new ConfirmCreateTicket(getTicketId());
+  }
+
+  ApproveOrder makeApproveOrderCommand(){
+    return new ApproveOrder(getOrderId());
   }
 
   private TicketDetails makeTicketDetails(OrderDetails orderDetails){
