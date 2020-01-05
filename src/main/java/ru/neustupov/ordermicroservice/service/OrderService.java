@@ -19,6 +19,7 @@ public class OrderService {
   @Autowired
   private OrderRepository orderRepository;
 
+  @Autowired
   private DomainEventPublisher eventPublisher;
 
   public Order createOrder(OrderDetails orderDetails){

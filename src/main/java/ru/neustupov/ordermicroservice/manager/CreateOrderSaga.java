@@ -1,23 +1,27 @@
 package ru.neustupov.ordermicroservice.manager;
 
-import io.eventuate.tram.sagas.orchestration.SagaInstance;
-import io.eventuate.tram.sagas.orchestration.SagaManager;
-import java.util.Optional;
+import io.eventuate.tram.sagas.orchestration.SagaDefinition;
+import io.eventuate.tram.sagas.simpledsl.SimpleSaga;
+import ru.neustupov.ordermicroservice.proxy.AccountingServiceProxy;
+import ru.neustupov.ordermicroservice.proxy.ConsumerServiceProxy;
+import ru.neustupov.ordermicroservice.proxy.KitchenServiceProxy;
+import ru.neustupov.ordermicroservice.proxy.OrderServiceProxy;
 
-public class CreateOrderSaga implements SagaManager {
+public class CreateOrderSaga implements SimpleSaga<CreateOrderSagaState> {
 
-  @Override
-  public SagaInstance create(Object o) {
-    return null;
+  private SagaDefinition<CreateOrderSagaState> sagaDefinition;
+
+  public CreateOrderSaga(OrderServiceProxy orderService,
+      ConsumerServiceProxy consumerService,
+      KitchenServiceProxy kitchenService,
+      AccountingServiceProxy accountingService){
+    this.sagaDefinition =
+        step()
+        .withCompensation(orderService.reject(), CreateOrderSagaState::makeRejectOrderCommand)
   }
 
   @Override
-  public SagaInstance create(Object o, Class aClass, Object o2) {
-    return null;
-  }
-
-  @Override
-  public SagaInstance create(Object o, Optional optional) {
-    return null;
+  public SagaDefinition<CreateOrderSagaState> getSagaDefinition() {
+    return sagaDefinition;
   }
 }
